@@ -1,0 +1,219 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+/*
+ * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
+ * Author: Alexandre Torgue <alexandre.torgue@st.com> for STMicroelectronics.
+ */
+
+#include "stm32mp15-m4-srm.dtsi"
+#include "stm32mp15-m4-srm-pinctrl.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/mfd/st,stpmic1.h>
+
+/ {
+	memory@c0000000 {
+		device_type = "memory";
+		reg = <0xc0000000 0x20000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		mcuram2: mcuram2@10000000 {
+			compatible = "shared-dma-pool";
+			reg = <0x10000000 0x40000>;
+			no-map;
+		};
+
+		vdev0vring0: vdev0vring0@10040000 {
+			compatible = "shared-dma-pool";
+			reg = <0x10040000 0x1000>;
+			no-map;
+		};
+
+		vdev0vring1: vdev0vring1@10041000 {
+			compatible = "shared-dma-pool";
+			reg = <0x10041000 0x1000>;
+			no-map;
+		};
+
+		vdev0buffer: vdev0buffer@10042000 {
+			compatible = "shared-dma-pool";
+			reg = <0x10042000 0x4000>;
+			no-map;
+		};
+
+		mcuram: mcuram@30000000 {
+			compatible = "shared-dma-pool";
+			reg = <0x30000000 0x40000>;
+			no-map;
+		};
+
+		retram: retram@38000000 {
+			compatible = "shared-dma-pool";
+			reg = <0x38000000 0x10000>;
+			no-map;
+		};
+	};
+
+	aliases {
+		serial8 = &uart8;
+	};
+
+	usb_phy_tuning: usb-phy-tuning {
+        st,hs-dc-level = <2>;
+        st,fs-rftime-tuning;
+        st,hs-rftime-reduction;
+        st,hs-current-trim = <15>;
+        st,hs-impedance-trim = <1>;
+        st,squelch-level = <3>;
+        st,hs-rx-offset = <2>;
+        st,no-lsfs-sc;
+    };
+
+	v3v3: regulator-3p3v {
+		compatible = "regulator-fixed";
+        regulator-name = "v3v3";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        regulator-always-on;
+        regulator-boot-on;
+	};
+
+	vddcore: buck1 {
+		compatible = "regulator-fixed";
+        regulator-name = "vddcore";
+        regulator-min-microvolt = <1200000>;
+        regulator-max-microvolt = <1350000>;
+        regulator-always-on;
+        regulator-boot-on;
+	};
+
+	vdd_usb: regulator-vdd-usb {
+        compatible = "regulator-fixed";
+        regulator-name = "vdd_usb";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        regulator-always-on;
+        regulator-boot-on;
+    };
+
+    vdd: regulator-vdd {
+        compatible = "regulator-fixed";
+        regulator-name = "vdd";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        regulator-always-on;
+        regulator-boot-on;
+    };
+
+	vin: regulator-vin {
+        compatible = "regulator-fixed";
+        regulator-name = "vin";
+        regulator-min-microvolt = <5000000>;
+        regulator-max-microvolt = <5000000>;
+        regulator-always-on;
+        regulator-boot-on;
+    };
+
+};
+
+&cpu0{
+	cpu-supply = <&vddcore>;
+};
+
+&cpu1{
+	cpu-supply = <&vddcore>;
+};
+
+&crc1 {
+	status = "okay";
+};
+
+&dma1 {
+	sram = <&dma_pool>;
+};
+
+&dma2 {
+	sram = <&dma_pool>;
+};
+
+&dts {
+	status = "okay";
+};
+
+&hash1 {
+	status = "okay";
+};
+
+&ipcc {
+	status = "okay";
+};
+
+&iwdg2 {
+	timeout-sec = <32>;
+	status = "okay";
+};
+
+&m4_rproc {
+	memory-region = <&retram>, <&mcuram>, <&mcuram2>, <&vdev0vring0>,
+			<&vdev0vring1>, <&vdev0buffer>;
+	mboxes = <&ipcc 0>, <&ipcc 1>, <&ipcc 2>;
+	mbox-names = "vq0", "vq1", "shutdown";
+	interrupt-parent = <&exti>;
+	interrupts = <68 1>;
+	wakeup-source;
+	status = "okay";
+};
+
+&pwr_regulators {
+	vdd-supply = <&vdd>;
+	vdd_3v3_usbfs-supply = <&vdd_usb>;
+};
+
+&rtc {
+	status = "okay";
+};
+
+&sdmmc1 {
+	pinctrl-names = "default", "opendrain", "sleep";
+	pinctrl-0 = <&sdmmc1_b4_pins_a>;
+	pinctrl-1 = <&sdmmc1_b4_od_pins_a>;
+	pinctrl-2 = <&sdmmc1_b4_sleep_pins_a>;
+	broken-cd;
+	st,neg-edge;
+	bus-width = <4>;
+    vmmc-supply = <&v3v3>;
+	status = "okay";
+};
+
+&sram {
+	dma_pool: dma_pool@0 {
+		reg = <0x50000 0x10000>;
+		pool;
+	};
+};
+
+&uart8 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart8_pins_mx>;
+    /delete-property/dmas;
+    /delete-property/dma-names;
+    status = "okay";
+};
+
+&pinctrl {
+    uart8_pins_mx: uart8-mx-0 {
+        pins1 {
+            pinmux = <STM32_PINMUX('E', 1, AF8)>; /* UART8_TX */
+            bias-disable;
+            drive-push-pull;
+            slew-rate = <0>;
+        };
+        pins2 {
+            pinmux = <STM32_PINMUX('E', 0, AF8)>; /* UART8_RX */
+            bias-disable;
+        };
+    };
+};

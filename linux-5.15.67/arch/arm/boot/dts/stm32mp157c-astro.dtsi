@@ -44,6 +44,12 @@
 			no-map;
 		};
 
+		mcu_rsc_table: mcu_rsc_table@10048000 {
+			compatible = "shared-dma-pool";
+			reg = <0x10048000 0x8000>;
+			no-map;
+		};
+
 		mcuram: mcuram@30000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x30000000 0x40000>;
@@ -55,10 +61,16 @@
 			reg = <0x38000000 0x10000>;
 			no-map;
 		};
-	};
 
-	aliases {
-		serial8 = &uart8;
+		gpu_reserved: gpu@d4000000 {
+			reg = <0xd4000000 0x4000000>;
+			no-map;
+		};
+
+		optee@de000000 {
+			reg = <0xde000000 0x2000000>;
+			no-map;
+		};
 	};
 
 	usb_phy_tuning: usb-phy-tuning {
@@ -141,6 +153,10 @@
 
 &dts {
 	status = "okay";
+};
+
+&gpu {
+	contiguous-area = <&gpu_reserved>;
 };
 
 &hash1 {

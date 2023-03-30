@@ -10,7 +10,7 @@ source $ENV_SET
 
 if [ $1 == "astro" ]; then
     unset -v CFLAGS LDFLAGS
-    make ARCH=arm CROSS_COMPILE=arm-ostl-linux-gnueabi- O="$PWD/../build" stm32mp157c_astro_defconfig
+    make ARCH=arm CROSS_COMPILE=arm-ostl-linux-gnueabi- O="$PWD/../build" stm32mp157c-astro_defconfig
     make ARCH=arm CROSS_COMPILE=arm-ostl-linux-gnueabi- O="$PWD/../build" uImage dtbs modules LOADADDR=0XC2000040 -j12
 
 elif [ $1 == "copy" ]; then

@@ -131,6 +131,21 @@
 
 };
 
+&pinctrl {
+    uart8_pins_mx: uart8-mx-0 {
+        pins1 {
+            pinmux = <STM32_PINMUX('E', 1, AF8)>; /* UART8_TX */
+            bias-disable;
+            drive-push-pull;
+            slew-rate = <0>;
+        };
+        pins2 {
+            pinmux = <STM32_PINMUX('E', 0, AF8)>; /* UART8_RX */
+            bias-disable;
+        };
+    };
+};
+
 &cpu0{
 	cpu-supply = <&vddcore>;
 };
@@ -219,17 +234,21 @@
     status = "okay";
 };
 
-&pinctrl {
-    uart8_pins_mx: uart8-mx-0 {
-        pins1 {
-            pinmux = <STM32_PINMUX('E', 1, AF8)>; /* UART8_TX */
-            bias-disable;
-            drive-push-pull;
-            slew-rate = <0>;
-        };
-        pins2 {
-            pinmux = <STM32_PINMUX('E', 0, AF8)>; /* UART8_RX */
-            bias-disable;
-        };
-    };
+&usbh_ehci {
+    phys = <&usbphyc_port0>;
+    status = "okay";
+};
+
+&usbphyc {
+    status = "okay";
+};
+
+&usbphyc_port0 {
+    phy-supply = <&vdd_usb>;
+    st,phy-tuning = <&usb_phy_tuning>;
+};
+
+&usbphyc_port1 {
+    phy-supply = <&vdd_usb>;
+    st,phy-tuning = <&usb_phy_tuning>;
 };

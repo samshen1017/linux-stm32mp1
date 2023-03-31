@@ -6,7 +6,6 @@
 
 #include "stm32mp15-m4-srm.dtsi"
 #include "stm32mp15-m4-srm-pinctrl.dtsi"
-#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/mfd/st,stpmic1.h>
 
 / {
@@ -41,12 +40,6 @@
 		vdev0buffer: vdev0buffer@10042000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10042000 0x4000>;
-			no-map;
-		};
-
-		mcu_rsc_table: mcu_rsc_table@10048000 {
-			compatible = "shared-dma-pool";
-			reg = <0x10048000 0x8000>;
 			no-map;
 		};
 
@@ -157,6 +150,7 @@
 
 &gpu {
 	contiguous-area = <&gpu_reserved>;
+	status = "okay";
 };
 
 &hash1 {
@@ -181,11 +175,6 @@
 	interrupts = <68 1>;
 	wakeup-source;
 	status = "okay";
-};
-
-&pwr_regulators {
-	vdd-supply = <&vdd>;
-	vdd_3v3_usbfs-supply = <&vdd_usb>;
 };
 
 &rtc {

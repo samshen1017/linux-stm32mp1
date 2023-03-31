@@ -8,12 +8,13 @@ cd $KERNEL_DIR
 #设置编译器
 source $ENV_SET
 
-if [ $1 == "astro" ]; then
+if [ $1 == "debug" ]; then
     unset -v CFLAGS LDFLAGS
     make ARCH=arm CROSS_COMPILE=arm-ostl-linux-gnueabi- O="$PWD/../build" stm32mp157c-astro_defconfig
     make ARCH=arm CROSS_COMPILE=arm-ostl-linux-gnueabi- O="$PWD/../build" uImage dtbs modules LOADADDR=0XC2000040 -j12
 
 elif [ $1 == "copy" ]; then
+    mkdir -p ../../image
     cp $PWD/../build/arch/arm/boot/uImage ../../image
     cp $PWD/../build/arch/arm/boot/dts/stm32mp157c-astro.dtb ../../image
 
